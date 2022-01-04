@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomStyle {
-  static const Loading = TextStyle(
-      fontSize: 28,
-      letterSpacing: 3,
-      fontFamily: 'Poppins',
-      color: CustomStyle.fullRed);
+  static const Loading =
+      TextStyle(fontSize: 28, letterSpacing: 3, color: CustomStyle.fullRed);
   static const city = TextStyle(
       fontSize: 16,
       color: CustomStyle.foregroundColor,
@@ -21,6 +18,29 @@ class CustomStyle {
     color: CustomStyle.grey,
   );
   static const bold18 = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
+  static const bold14black = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 14,
+      color: CustomStyle.foregroundColor);
+  static const grey14 = TextStyle(fontSize: 14, color: CustomStyle.grey);
+  static const grey16 = TextStyle(fontSize: 16, color: CustomStyle.grey);
+  static const boxShadow = BoxShadow(color: Colors.red, spreadRadius: 10);
+  static const black20bold = TextStyle(
+      fontSize: 20,
+      color: CustomStyle.foregroundColor,
+      fontWeight: FontWeight.bold);
+  static const black20 = TextStyle(
+    fontSize: 20,
+    color: CustomStyle.foregroundColor,
+  );
+  static const white20 = TextStyle(
+    fontSize: 20,
+    color: CustomStyle.backgroundColor,
+  );
+  static const black24bold = TextStyle(
+      fontSize: 24,
+      color: CustomStyle.foregroundColor,
+      fontWeight: FontWeight.bold);
 
   static const fullRed = Color(0xFFC8161D);
   static const backgroundColor = Color(0XFFFFFFFF);

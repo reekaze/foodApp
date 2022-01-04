@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:test_project/services/BottomNav.dart';
 import 'package:test_project/services/Cards.dart';
 import 'package:test_project/services/FoodList.dart';
 import 'package:test_project/styles/CustomStyle.dart';
@@ -13,6 +12,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int selectedIndex = 0;
+  void onTapItem(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  List<Widget> BodyWidget = [
+    Body(),
+    Text('Index 1, Favorite'),
+    Text('Index 2, Account'),
+    Text('Index 3, More'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,8 +68,22 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Body(),
-      bottomNavigationBar: BottomNav(),
+      body: BodyWidget.elementAt(selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: CustomStyle.red,
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.widgets_rounded), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border_outlined), label: 'Favorite'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline_rounded), label: 'Account'),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: 'More'),
+        ],
+        onTap: onTapItem,
+        currentIndex: selectedIndex,
+      ),
     );
   }
 }
@@ -208,7 +235,7 @@ class _CardListState extends State<CardList> {
                       ClipRRect(
                           child: Image.asset(
                         cards[index].foodIcon,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fill,
                         width: 50,
                         height: 50,
                       )),
