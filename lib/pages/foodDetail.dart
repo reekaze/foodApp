@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test_project/services/Foods.dart';
+import 'package:test_project/services/application_favorite.dart';
 import 'package:test_project/styles/CustomStyle.dart';
 
 class FoodDetail extends StatefulWidget {
@@ -15,12 +17,12 @@ class _FoodDetailState extends State<FoodDetail> {
   @override
   Widget build(BuildContext context) {
     final food = ModalRoute.of(context)!.settings.arguments as Foods;
-
-    void favoriteOnPressed() {
-      setState(() {
-        isTapped = isTapped ? false : true;
-      });
-    }
+    final appState = Provider.of<ApplicationFavorite>(context);
+    var result =
+        appState.favoriteFoodList.where((e) => e.detailName == food.detailName);
+    // if (result.isNotEmpty) {
+    //   isTapped = true;
+    // }
 
     void add() {
       setState(() {
@@ -34,6 +36,10 @@ class _FoodDetailState extends State<FoodDetail> {
           counter -= 1;
         }
       });
+    }
+
+    void onPressedBack() {
+      Navigator.pop(context, {"isTapped": isTapped, "counter": counter});
     }
 
     return Scaffold(
@@ -53,7 +59,7 @@ class _FoodDetailState extends State<FoodDetail> {
                           width: 50,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () => {Navigator.pop(context)},
+                            onPressed: onPressedBack,
                             child: Icon(
                               Icons.keyboard_arrow_left,
                               color: CustomStyle.foregroundColor,
@@ -71,16 +77,24 @@ class _FoodDetailState extends State<FoodDetail> {
                           width: 50,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: favoriteOnPressed,
+                            onPressed: () {
+                              setState(() {
+                                if (result.isNotEmpty) {
+                                  appState.removeFavoriteFood(food);
+                                } else {
+                                  appState.addFavoriteFood(food);
+                                }
+                              });
+                            },
                             child: Icon(
                               Icons.favorite_outline,
                               size: 20,
-                              color: isTapped
+                              color: result.isNotEmpty
                                   ? CustomStyle.backgroundColor
                                   : CustomStyle.red,
                             ),
                             style: ElevatedButton.styleFrom(
-                                primary: isTapped
+                                primary: result.isNotEmpty
                                     ? CustomStyle.red
                                     : CustomStyle.backgroundColor,
                                 onPrimary: CustomStyle.red,

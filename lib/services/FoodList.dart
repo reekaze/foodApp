@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:test_project/pages/foodDetail.dart';
 import 'package:test_project/services/Foods.dart';
@@ -66,8 +68,10 @@ class _FoodListState extends State<FoodList> {
 
   @override
   Widget build(BuildContext context) {
-    void onTapFoodList(Foods food) {
-      Navigator.pushNamed(context, '/foodDetail', arguments: food);
+    void onTapFoodList(Foods food) async {
+      final result =
+          await Navigator.pushNamed(context, '/foodDetail', arguments: food);
+      // print((result as Map<String, dynamic>)['counter']);
     }
 
     List<Foods> selectedFoods =

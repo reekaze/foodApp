@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:test_project/pages/favorite.dart';
 import 'package:test_project/services/Cards.dart';
 import 'package:test_project/services/FoodList.dart';
+import 'package:test_project/services/Foods.dart';
+import 'package:test_project/services/application_favorite.dart';
 import 'package:test_project/styles/CustomStyle.dart';
 
 class Home extends StatefulWidget {
@@ -18,13 +22,6 @@ class _HomeState extends State<Home> {
       selectedIndex = index;
     });
   }
-
-  List<Widget> BodyWidget = [
-    Body(),
-    Text('Index 1, Favorite'),
-    Text('Index 2, Account'),
-    Text('Index 3, More'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +65,12 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: BodyWidget.elementAt(selectedIndex),
+      body: [
+        Body(),
+        Favorite(),
+        Text('Index 2, Account'),
+        Text('Index 3, More'),
+      ].elementAt(selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: CustomStyle.red,
@@ -89,83 +91,88 @@ class _HomeState extends State<Home> {
 }
 
 class Body extends StatefulWidget {
-  const Body({Key? key}) : super(key: key);
-
   @override
   _BodyState createState() => _BodyState();
+
+  const Body({Key? key}) : super(key: key);
 }
 
 class _BodyState extends State<Body> {
   String type = "Burgers";
   set string(String value) => setState(() => type = value);
 
+  Future<void> _onRefresh() async {}
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-      children: [
-        Text(
-          'Hey!',
-          style: CustomStyle.heyText,
-        ),
-        Text(
-          "Let's get your order",
-          style: CustomStyle.letsget,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Container(
-          height: 40,
-          child: Material(
-            elevation: 10,
-            shadowColor: CustomStyle.grey,
-            child: TextField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: "Search our delicious burger",
-                  hintStyle: TextStyle(fontSize: 12),
-                  contentPadding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5))),
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ListView(
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        children: [
+          Text(
+            'Hey!',
+            style: CustomStyle.heyText,
+          ),
+          Text(
+            "Let's get your order",
+            style: CustomStyle.letsget,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+            height: 40,
+            child: Material(
+              elevation: 10,
+              shadowColor: CustomStyle.grey,
+              child: TextField(
+                decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    hintText: "Search our delicious burger",
+                    hintStyle: TextStyle(fontSize: 12),
+                    contentPadding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5))),
+              ),
             ),
           ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        CardList(callback: (val) => setState(() => type = val)),
-        SizedBox(
-          height: 20,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Popular',
-              style: CustomStyle.bold18,
-            ),
-            TextButton(
-                onPressed: () {},
-                child: RichText(
-                    text: TextSpan(children: [
-                  TextSpan(
-                      text: "View all ",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: CustomStyle.red,
-                          fontSize: 12)),
-                  WidgetSpan(
-                      child: Icon(
-                    Icons.keyboard_arrow_right,
-                    color: CustomStyle.red,
-                    size: 15,
-                  ))
-                ])))
-          ],
-        ),
-        FoodList(selected: type),
-      ],
+          SizedBox(
+            height: 20,
+          ),
+          CardList(callback: (val) => setState(() => type = val)),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Popular',
+                style: CustomStyle.bold18,
+              ),
+              TextButton(
+                  onPressed: () {},
+                  child: RichText(
+                      text: TextSpan(children: [
+                    TextSpan(
+                        text: "View all ",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: CustomStyle.red,
+                            fontSize: 12)),
+                    WidgetSpan(
+                        child: Icon(
+                      Icons.keyboard_arrow_right,
+                      color: CustomStyle.red,
+                      size: 15,
+                    ))
+                  ])))
+            ],
+          ),
+          FoodList(selected: type),
+        ],
+      ),
     );
   }
 }
