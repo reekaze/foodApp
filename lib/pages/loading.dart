@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:test_project/styles/CustomStyle.dart';
@@ -10,9 +11,17 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+  FirebaseAuth user = FirebaseAuth.instance;
+
   void waiting() async {
     await Future.delayed(Duration(seconds: 3));
-    Navigator.pushReplacementNamed(context, '/home');
+    user.authStateChanges().listen((User? user) {
+      if (user == null) {
+        Navigator.pushReplacementNamed(context, '/signIn');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    });
   }
 
   @override

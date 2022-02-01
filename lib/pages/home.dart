@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:test_project/pages/account.dart';
 import 'package:test_project/pages/favorite.dart';
+import 'package:test_project/pages/more.dart';
 import 'package:test_project/services/Cards.dart';
 import 'package:test_project/services/FoodList.dart';
 import 'package:test_project/services/Foods.dart';
@@ -21,6 +25,26 @@ class _HomeState extends State<Home> {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String? downUrl;
+  FirebaseStorage storage = FirebaseStorage.instance;
+
+  wait() async {
+    String downloadURL = await storage
+        .ref('uploads/profile/${auth.currentUser!.uid}/profilePic.png')
+        .getDownloadURL();
+    setState(() {
+      downUrl = downloadURL;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    wait();
   }
 
   @override
@@ -55,21 +79,37 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            IconButton(
-              icon: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Image.asset('assets/images/yasuo.jpg'),
-              ),
-              onPressed: () {},
-            )
+            downUrl != null
+                ? IconButton(
+                    icon: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                        downUrl!,
+                        width: 50,
+                        height: 50,
+                      ),
+                    ),
+                    onPressed: () {},
+                  )
+                : IconButton(
+                    icon: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+                        width: 50,
+                        height: 50,
+                      ),
+                    ),
+                    onPressed: () {},
+                  )
           ],
         ),
       ),
       body: [
         Body(),
         Favorite(),
-        Text('Index 2, Account'),
-        Text('Index 3, More'),
+        Account(),
+        More(),
       ].elementAt(selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
