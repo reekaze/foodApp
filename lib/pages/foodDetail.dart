@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_project/services/Foods.dart';
@@ -14,10 +18,29 @@ class FoodDetail extends StatefulWidget {
 class _FoodDetailState extends State<FoodDetail> {
   bool isTapped = false;
   int counter = 0;
+  String foodDetailName = "";
+
+  CollectionReference carts = FirebaseFirestore.instance.collection('carts');
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final data = carts.doc(auth.currentUser!.uid).get().then((value) {
+      print(value.get(foodDetailName));
+      setState(() {
+        counter = value.get(foodDetailName);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final food = ModalRoute.of(context)!.settings.arguments as Foods;
     final appState = Provider.of<ApplicationFavorite>(context);
+    foodDetailName = food.detailName;
+
     var result =
         appState.favoriteFoodList.where((e) => e.detailName == food.detailName);
     // if (result.isNotEmpty) {
@@ -28,6 +51,11 @@ class _FoodDetailState extends State<FoodDetail> {
       setState(() {
         counter += 1;
       });
+      carts
+          .doc(auth.currentUser!.uid)
+          .set({food.detailName: counter}, SetOptions(merge: true))
+          .then((value) => print("User Updated"))
+          .catchError((error) => print("Failed to update user: $error"));
     }
 
     void remove() {
@@ -36,9 +64,22 @@ class _FoodDetailState extends State<FoodDetail> {
           counter -= 1;
         }
       });
+      carts
+          .doc(auth.currentUser!.uid)
+          .set({food.detailName: counter}, SetOptions(merge: true))
+          .then((value) => print("User Updated"))
+          .catchError((error) => print("Failed to update user: $error"));
     }
 
     void onPressedBack() {
+      if (counter > 0) {
+        carts
+            .doc(auth.currentUser!.uid)
+            .set({food.detailName: counter}, SetOptions(merge: true))
+            .then((value) => print("User Updated"))
+            .catchError((error) => print("Failed to update user: $error"));
+      }
+
       Navigator.pop(context, {"isTapped": isTapped, "counter": counter});
     }
 
@@ -220,9 +261,40 @@ class _FoodDetailState extends State<FoodDetail> {
                                   color: CustomStyle.foregroundColor,
                                 ),
                               )),
-                          Text(
-                            counter.toString(),
-                            style: CustomStyle.black24bold,
+                          FutureBuilder<DocumentSnapshot>(
+                            future: carts.doc(auth.currentUser!.uid).get(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text("Something went wrong");
+                              }
+
+                              if (snapshot.hasData && !snapshot.data!.exists) {
+                                return Text("Document does not exist");
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                Map<String, dynamic> data = snapshot.data!
+                                    .data() as Map<String, dynamic>;
+                                if (data[food.detailName].toString() !=
+                                    "null") {
+                                  return Text(
+                                    data[food.detailName].toString(),
+                                    style: CustomStyle.black24bold,
+                                  );
+                                } else {
+                                  return Text(
+                                    "0",
+                                    style: CustomStyle.black24bold,
+                                  );
+                                }
+                              }
+
+                              return Text(
+                                "loading",
+                              );
+                            },
                           ),
                           CircleAvatar(
                               backgroundColor: Colors.red[200],
