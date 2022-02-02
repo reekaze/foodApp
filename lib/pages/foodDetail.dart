@@ -292,7 +292,8 @@ class _FoodDetailState extends State<FoodDetail> {
                               }
 
                               return Text(
-                                "loading",
+                                counter.toString(),
+                                style: CustomStyle.black24bold,
                               );
                             },
                           ),
@@ -344,7 +345,9 @@ class _FoodDetailState extends State<FoodDetail> {
                       )),
                       WidgetSpan(child: Text('Go To Cart'))
                     ])),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/cart");
+                    },
                     style: ElevatedButton.styleFrom(
                         primary: CustomStyle.red,
                         onPrimary: CustomStyle.backgroundColor,

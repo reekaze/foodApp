@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test_project/pages/cart.dart';
 import 'package:test_project/pages/foodDetail.dart';
 import 'package:test_project/pages/home.dart';
 import 'package:test_project/pages/loading.dart';
@@ -26,6 +27,7 @@ void main() async {
         '/home': (context) => Home(),
         '/profile': (context) => Profile(),
         '/foodDetail': (context) => FoodDetail(),
+        '/cart': (context) => Cart(),
       },
     ),
   ));
